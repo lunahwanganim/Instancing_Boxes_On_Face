@@ -1,0 +1,25 @@
+#pragma kernel Init
+#include "../Libraries/header.cginc"
+#include "../Libraries/Quaternion.cginc"
+
+#define NB_INIT_THREADS_PER_GROUP 256
+
+struct PCData
+{
+    float3 Position;
+};
+RWStructuredBuffer<PCData> _PCDataBuffer;
+
+[numthreads(NB_INIT_THREADS_PER_GROUP,1,1)]
+void Init (uint3 DTid : SV_DispatchThreadID)
+{
+    float3 rand_val_3 = frac(float3(DTid.x, DTid.x, DTid.x) * float3(.1031, .1030, .0973));
+    rand_val_3 += dot(rand_val_3, rand_val_3.yzx + 33.33);
+    rand_val_3 = frac((rand_val_3.xxy + rand_val_3.yzz) * rand_val_3.zyx);
+    float phi = Fit(rand_val_3.x, 0, 1, 0, 2 * PI);
+    float   cos_theta = Fit(rand_val_3.y, 0, 1, -1, 1);
+    float   theta = acos(cos_theta);
+    float   radius = pow(rand_val_3.z, .3333);
+    float3 pos = .1 * radius * float3(sin(theta) * cos(phi), sin(theta) * sin(phi), cos_theta);
+    _PCDataBuffer[DTid.x].Position = pos;
+}
