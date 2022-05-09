@@ -1,25 +1,71 @@
-#pragma kernel Init
+#pragma kernel Update
 #include "../Libraries/header.cginc"
 #include "../Libraries/Quaternion.cginc"
 
 #define NB_INIT_THREADS_PER_GROUP 256
+#define NB_UPDATE_THREADS_PER_GROUP 256
 
-struct PCData
+
+struct BoxPrimUV
+{
+    uint Sourceprim;
+    float2 Sourceprimuv;
+};
+
+struct BoxRender
 {
     float3 Position;
+    float4 Rot;
+    float Pscale;
 };
-RWStructuredBuffer<PCData> _PCDataBuffer;
 
-[numthreads(NB_INIT_THREADS_PER_GROUP,1,1)]
-void Init (uint3 DTid : SV_DispatchThreadID)
+struct Vertex
 {
-    float3 rand_val_3 = frac(float3(DTid.x, DTid.x, DTid.x) * float3(.1031, .1030, .0973));
-    rand_val_3 += dot(rand_val_3, rand_val_3.yzx + 33.33);
-    rand_val_3 = frac((rand_val_3.xxy + rand_val_3.yzz) * rand_val_3.zyx);
-    float phi = Fit(rand_val_3.x, 0, 1, 0, 2 * PI);
-    float   cos_theta = Fit(rand_val_3.y, 0, 1, -1, 1);
-    float   theta = acos(cos_theta);
-    float   radius = pow(rand_val_3.z, .3333);
-    float3 pos = .1 * radius * float3(sin(theta) * cos(phi), sin(theta) * sin(phi), cos_theta);
-    _PCDataBuffer[DTid.x].Position = pos;
+    float3 Position;
+    float3 Normal;
+    float4 Tangent;
+};
+
+
+
+
+RWStructuredBuffer<int> _BufferVtxId;
+RWStructuredBuffer<Vertex> _BufferVertex;
+RWStructuredBuffer<BoxPrimUV> _BufferBoxPrimUV;
+RWStructuredBuffer<BoxRender> _BufferBoxRender;
+
+float4x4 _Transform;
+
+
+[numthreads(NB_UPDATE_THREADS_PER_GROUP,1,1)]
+void Update (uint3 DTid : SV_DispatchThreadID)
+{
+
+    BoxPrimUV PrimUV_data = _BufferBoxPrimUV[DTid.x];
+    int     sourceprim = PrimUV_data.Sourceprim;
+    float2  sourceprimuv = PrimUV_data.Sourceprimuv;
+
+    BoxRender BoxRender_data = _BufferBoxRender[DTid.x];
+
+    uint     vtx_id_0 = _BufferVtxId[DTid.x * 3 + 0];
+    uint     vtx_id_1 = _BufferVtxId[DTid.x * 3 + 1];
+    uint     vtx_id_2 = _BufferVtxId[DTid.x * 3 + 2];
+
+
+    float3  pos_vtx_0 = _BufferVertex[vtx_id_0].Position;
+    float3  pos_vtx_1 = _BufferVertex[vtx_id_1].Position;
+    float3  pos_vtx_2 = _BufferVertex[vtx_id_2].Position;
+
+    float3  pos = pos_vtx_0 + 
+                  (pos_vtx_1 - pos_vtx_0) * sourceprimuv.x + 
+                  (pos_vtx_2 - pos_vtx_0) * sourceprimuv.y;
+
+
+    pos = (mul(_Transform, float4(pos.x, pos.y, pos.z, 1.0))).xyz;
+
+    BoxRender_data.Position = pos;
+
+
+    _BufferBoxRender[DTid.x] = BoxRender_data;
+
 }

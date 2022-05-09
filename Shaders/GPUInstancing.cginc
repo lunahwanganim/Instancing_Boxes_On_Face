@@ -2,13 +2,14 @@
 
 
 #ifdef UNITY_PROCEDURAL_INSTANCING_ENABLED
-    struct PCData
+    struct BoxRender
     {
         float3 Position;
+        float4 Rot;
+        float Pscale;
     };
-
     #if defined(SHADER_API_GLCORE) || defined(SHADER_API_D3D11) || defined(SHADER_API_GLES3) || defined(SHADER_API_METAL) || defined(SHADER_API_VULKAN) || defined(SHADER_API_PSSL) || defined(SHADER_API_XBOXONE)
-        uniform StructuredBuffer<PCData> _PCDataBuffer; 
+        uniform StructuredBuffer<BoxRender> _BufferBoxRender; 
     #endif
 #endif
 
@@ -25,7 +26,7 @@ void InjectSetup_float(float3 In, out float3 Out)
     Out = float3(0, 0, 0);
 
     #ifdef UNITY_PROCEDURAL_INSTANCING_ENABLED
-        PCData attribs = _PCDataBuffer[unity_InstanceID];
+        BoxRender attribs = _BufferBoxRender[unity_InstanceID];
         Out = In + attribs.Position.xyz;
     #endif  
 }
