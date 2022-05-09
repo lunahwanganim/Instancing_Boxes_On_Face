@@ -64,6 +64,11 @@ public class SystemController : MonoBehaviour
         var box_primuv_data_array = new BoxPrimUV[NumInstance];
         var box_render_data_array = new BoxRender[NumInstance];
         var data_res_x = Data0.width;
+
+
+        Debug.Log(Data0.GetPixel(3, 5).a);
+
+
         int i_x, i_y;
         int triangle_id;
         Vector2 prim_uv = new Vector2(0.0f, 0.0f);
@@ -71,6 +76,9 @@ public class SystemController : MonoBehaviour
         {
             i_x = i % data_res_x;
             i_y = i / data_res_x;
+
+            
+
             var data_0 = Data0.GetPixel(i_x, i_y);
             triangle_id = Mathf.FloorToInt(data_0.g * 100.0f) * 100 +
                         Mathf.FloorToInt(data_0.r * 100.0f);
