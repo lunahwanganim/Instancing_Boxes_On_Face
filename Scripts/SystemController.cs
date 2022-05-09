@@ -44,6 +44,7 @@ public class SystemController : MonoBehaviour
     public int NumInstance;
     public Texture2D Data0;
     public Texture2D Data1;
+    public Mesh DataMesh;
     private ComputeBuffer _BufferVtxId;
     private ComputeBuffer _BufferVertex;
     private ComputeBuffer _BufferBoxPrimUV;
@@ -63,12 +64,10 @@ public class SystemController : MonoBehaviour
         _BufferBoxRender = new ComputeBuffer(NumInstance, Marshal.SizeOf(typeof(BoxRender)));
         var box_primuv_data_array = new BoxPrimUV[NumInstance];
         var box_render_data_array = new BoxRender[NumInstance];
+
+
+        /*
         var data_res_x = Data0.width;
-
-
-        //Debug.Log(Data0.GetPixel(3, 5).a);
-
-
         int i_x, i_y;
         int triangle_id;
         Vector2 prim_uv = new Vector2(0.0f, 0.0f);
@@ -76,12 +75,8 @@ public class SystemController : MonoBehaviour
         {
             i_x = i % data_res_x;
             i_y = i / data_res_x;
-
-            
-
             var data_0 = Data0.GetPixel(i_x, i_y);
             var data_1 = Data1.GetPixel(i_x, i_y);
-
             triangle_id = Mathf.FloorToInt(data_0.g * 100.0f) * 100 +
                         Mathf.FloorToInt(data_0.r * 100.0f);
             prim_uv = new Vector2(data_0.b, data_1.r);
@@ -93,6 +88,21 @@ public class SystemController : MonoBehaviour
         _BufferBoxRender.SetData(box_render_data_array);
         box_primuv_data_array = null;
         box_render_data_array = null;
+        */
+
+        for(int i = 0; i < NumInstance; i++)
+        {
+
+
+        }
+
+
+        Debug.Log(DataMesh.bounds.center.x);
+
+
+
+
+
         #endregion
 
         #region Instancing prep
@@ -103,7 +113,7 @@ public class SystemController : MonoBehaviour
         _BufferVtxId = new ComputeBuffer(vtx_id_array.Length, Marshal.SizeOf(typeof(int)));
         _BufferVertex = new ComputeBuffer(vtx_pos_array.Length, Marshal.SizeOf(typeof(Vertex)));
 
-        _BufferVtxId.SetData(vtx_id_array);  // XXX: 이거 MeshRef가지고 Init에서 한번만 해도 되는 지 확	
+        //_BufferVtxId.SetData(vtx_id_array);  // XXX: 이거 MeshRef가지고 Init에서 한번만 해도 되는 지 확	
 
         vtx_id_array = null;
         vtx_pos_array = null;
@@ -112,7 +122,7 @@ public class SystemController : MonoBehaviour
         _NumThreadGrp = Mathf.CeilToInt(NumInstance / NB_UPDATE_THREADS_PER_GROUP) + 1;
         _CS = Compute;
         _KernelId = _CS.FindKernel("Update");
-        _CS.SetBuffer(_KernelId, "_BufferVtxId", _BufferVtxId);
+        //_CS.SetBuffer(_KernelId, "_BufferVtxId", _BufferVtxId);
 
 
         #endregion
