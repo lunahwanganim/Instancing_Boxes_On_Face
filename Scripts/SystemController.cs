@@ -42,8 +42,6 @@ public class SystemController : MonoBehaviour
     public Vector3 RenderBounds = new Vector3(100.0f, 100.0f, 100.0f);
 
     public int NumInstance;
-    public Texture2D Data0;
-    public Texture2D Data1;
     public Mesh DataMesh;
     private ComputeBuffer _BufferVtxId;
     private ComputeBuffer _BufferVertex;
