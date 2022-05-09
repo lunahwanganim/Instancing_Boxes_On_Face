@@ -66,7 +66,7 @@ public class SystemController : MonoBehaviour
         var data_res_x = Data0.width;
 
 
-        Debug.Log(Data0.GetPixel(3, 5).a);
+        //Debug.Log(Data0.GetPixel(3, 5).a);
 
 
         int i_x, i_y;
@@ -80,13 +80,14 @@ public class SystemController : MonoBehaviour
             
 
             var data_0 = Data0.GetPixel(i_x, i_y);
+            var data_1 = Data1.GetPixel(i_x, i_y);
+
             triangle_id = Mathf.FloorToInt(data_0.g * 100.0f) * 100 +
                         Mathf.FloorToInt(data_0.r * 100.0f);
-            prim_uv = new Vector2(data_0.b, data_0.a);
+            prim_uv = new Vector2(data_0.b, data_1.r);
             box_primuv_data_array[i].Sourceprim = (uint)triangle_id;
             box_primuv_data_array[i].Sourceprimuv = prim_uv;
-            var data_1 = Data1.GetPixel(i_x, i_y);
-            box_render_data_array[i].Pscale = data_1.r;
+            box_render_data_array[i].Pscale = data_1.g;
         }
         _BufferBoxPrimUV.SetData(box_primuv_data_array);
         _BufferBoxRender.SetData(box_render_data_array);
