@@ -90,18 +90,34 @@ public class SystemController : MonoBehaviour
         box_render_data_array = null;
         */
 
-        for(int i = 0; i < NumInstance; i++)
+        var data_vertices = DataMesh.vertices;
+
+        for (int i = 0; i < data_vertices.Length; i++)
         {
+            var vtx_id = Mathf.FloorToInt(data_vertices[i].x * 100.0f);
+            var attrib_val = data_vertices[i].y * 100.0f;
 
-
+            if (data_vertices[i].z > 0.00f && data_vertices[i].z < 0.01f)
+            {
+            box_primuv_data_array[vtx_id].Sourceprim = (uint)(Mathf.FloorToInt(attrib_val));
+            }
+            else if (data_vertices[i].z > 0.01f && data_vertices[i].z < 0.02f)
+            {
+                box_primuv_data_array[vtx_id].Sourceprimuv.x = attrib_val;
+            }
+            else if (data_vertices[i].z > 0.02f && data_vertices[i].z < 0.03f)
+            {
+                box_primuv_data_array[vtx_id].Sourceprimuv.y = attrib_val;
+            }
+            else if (data_vertices[i].z > 0.03f && data_vertices[i].z < 0.04f)
+            {
+                box_render_data_array[vtx_id].Pscale = attrib_val;
+            }
         }
-
-
-        Debug.Log(DataMesh.bounds.center.x);
-
-
-
-
+        _BufferBoxPrimUV.SetData(box_primuv_data_array);
+        _BufferBoxRender.SetData(box_render_data_array);
+        box_primuv_data_array = null;
+        box_render_data_array = null;
 
         #endregion
 
@@ -132,14 +148,25 @@ public class SystemController : MonoBehaviour
 
     void UpdateInstancing()
     {
+
+
         #region Get transformation of the face mesh
-        var matrix_transform = Face.GetComponentInChildren<MeshRenderer>().localToWorldMatrix;
+        var matrix_transform = new Matrix4x4();
+        if (Face.GetComponentInChildren<MeshRenderer>() != null)
+        {
+            matrix_transform = Face.GetComponentInChildren<MeshRenderer>().localToWorldMatrix;
+            Face.GetComponentInChildren<MeshRenderer>().enabled = false;
+        }
         #endregion
 
 
 
         #region Get data from mesh
-        var mesh = Face.GetComponentInChildren<MeshFilter>().sharedMesh;
+        var mesh = new Mesh();
+        if (Face.GetComponentInChildren<MeshFilter>() != null)
+        {
+            mesh = Face.GetComponentInChildren<MeshFilter>().sharedMesh;
+        }
 
 
 
@@ -241,7 +268,6 @@ public class SystemController : MonoBehaviour
     void OnDestroy()
     {
         ReleaseBuffer(_BufferArgsRender);
-
         ReleaseBuffer(_BufferBoxPrimUV);
         ReleaseBuffer(_BufferBoxRender);
         ReleaseBuffer(_BufferVtxId);
