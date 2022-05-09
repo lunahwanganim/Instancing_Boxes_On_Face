@@ -121,7 +121,15 @@ public class SystemController : MonoBehaviour
 
         #region Get data from mesh
         var mesh = Face.GetComponentInChildren<MeshFilter>().sharedMesh;
+
+
+
+
         var vtx_id_array = mesh.triangles;  // XXX: 이걸 Update에서 해야 하는 지 확인
+
+        //Debug.Log(vtx_id_array.Length);
+
+
         var vtx_pos_array = mesh.vertices;
         var vtx_normal_array = mesh.normals;
         mesh.RecalculateTangents();  // 이걸 반드시 해야 tangent가 계산된다. 

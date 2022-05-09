@@ -42,14 +42,17 @@ void Update (uint3 DTid : SV_DispatchThreadID)
 {
 
     BoxPrimUV PrimUV_data = _BufferBoxPrimUV[DTid.x];
-    int     sourceprim = PrimUV_data.Sourceprim;
+    uint     sourceprim = PrimUV_data.Sourceprim;
     float2  sourceprimuv = PrimUV_data.Sourceprimuv;
 
     BoxRender BoxRender_data = _BufferBoxRender[DTid.x];
 
-    uint     vtx_id_0 = _BufferVtxId[DTid.x * 3 + 0];
-    uint     vtx_id_1 = _BufferVtxId[DTid.x * 3 + 1];
-    uint     vtx_id_2 = _BufferVtxId[DTid.x * 3 + 2];
+
+
+
+    uint     vtx_id_0 = _BufferVtxId[sourceprim * 3 + 0];
+    uint     vtx_id_1 = _BufferVtxId[sourceprim * 3 + 1];
+    uint     vtx_id_2 = _BufferVtxId[sourceprim * 3 + 2];
 
 
     float3  pos_vtx_0 = _BufferVertex[vtx_id_0].Position;
@@ -62,6 +65,9 @@ void Update (uint3 DTid : SV_DispatchThreadID)
 
 
     pos = (mul(_Transform, float4(pos.x, pos.y, pos.z, 1.0))).xyz;
+
+
+
 
     BoxRender_data.Position = pos;
 
