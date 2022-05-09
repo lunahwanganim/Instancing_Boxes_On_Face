@@ -27,15 +27,9 @@ void InjectSetup_float(float3 In, out float3 Out)
 
     #ifdef UNITY_PROCEDURAL_INSTANCING_ENABLED
         BoxRender attribs = _BufferBoxRender[unity_InstanceID];
-<<<<<<< HEAD
-        Out = In + attribs.Position.xyz;
-=======
-<<<<<<< HEAD
-        Out = In + attribs.Position.xyz;
-=======
+
         Out = .2 * In + attribs.Position.xyz;
->>>>>>> parent of f964b5a (updated)
->>>>>>> fd66a2f81ab8e291aadf35723ffea2acfcea6731
+
     #endif  
 }
 
