@@ -1,6 +1,4 @@
 #include "../Libraries/header.cginc"
-
-
 #ifdef UNITY_PROCEDURAL_INSTANCING_ENABLED
     struct BoxRender
     {
@@ -13,23 +11,16 @@
     #endif
 #endif
 
-
-
 void SetupVtx()   // Get data from buffer and store them in private variables // Here it's just a dummy function
 {
         return;
 }
-
 void InjectSetup_float(float3 In, out float3 Out) 
 {
-
     Out = float3(0, 0, 0);
-
     #ifdef UNITY_PROCEDURAL_INSTANCING_ENABLED
         BoxRender attribs = _BufferBoxRender[unity_InstanceID];
-
         Out = .2 * In + attribs.Position.xyz;
-
     #endif  
 }
 
