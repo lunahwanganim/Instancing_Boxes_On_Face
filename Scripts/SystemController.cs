@@ -127,13 +127,18 @@ public class SystemController : MonoBehaviour
         _BufferVtxId = new ComputeBuffer(vtx_id_array.Length, Marshal.SizeOf(typeof(int)));
         _BufferVertex = new ComputeBuffer(vtx_pos_array.Length, Marshal.SizeOf(typeof(Vertex)));
 
-        //_BufferVtxId.SetData(vtx_id_array);  // XXX: 이거 MeshRef가지고 Init에서 한번만 해도 되는 지 확	
+        //_BufferVtxId.SetData(vtx_id_array);  // XXX: Can we do this just once here in Init? 
 
         vtx_id_array = null;
         vtx_pos_array = null;
 
 
-        _NumThreadGrp = Mathf.CeilToInt(NumInstance / NB_UPDATE_THREADS_PER_GROUP) + 1;
+        _NumThreadGrp = Mathf.CeilToInt(NumInstance / NB_UPDATE_THREADS_PER_GROUP); // XXX: This number should be correct for build
+        // This has caused a build error. 
+
+        //Debug.Log(_NumThreadGrp);
+
+
         _CS = Compute;
         _KernelId = _CS.FindKernel("Update");
         //_CS.SetBuffer(_KernelId, "_BufferVtxId", _BufferVtxId);
@@ -169,14 +174,14 @@ public class SystemController : MonoBehaviour
 
 
 
-        var vtx_id_array = mesh.triangles;  // XXX: 이걸 Update에서 해야 하는 지 확인
+        var vtx_id_array = mesh.triangles;  // XXX: Should we update every frame?
 
         //Debug.Log(vtx_id_array.Length);
 
 
         var vtx_pos_array = mesh.vertices;
         var vtx_normal_array = mesh.normals;
-        mesh.RecalculateTangents();  // 이걸 반드시 해야 tangent가 계산된다. 
+        mesh.RecalculateTangents();  // XXX : this is required for getting updated tangent
         var vtx_tangent_array = mesh.tangents;
         var num_vertex = vtx_pos_array.Length;
         var vtx_array = new Vertex[num_vertex];
@@ -193,6 +198,11 @@ public class SystemController : MonoBehaviour
         vtx_tangent_array = null;
         vtx_array = null;
         vtx_id_array = null;
+
+
+
+
+
 
         _CS.SetBuffer(_KernelId, "_BufferVtxId", _BufferVtxId);
         _CS.SetBuffer(_KernelId, "_BufferVertex", _BufferVertex);
