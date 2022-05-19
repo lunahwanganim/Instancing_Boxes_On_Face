@@ -43,6 +43,8 @@ public class SystemController : MonoBehaviour
 
     public int NumInstance;
     public Mesh DataMesh;
+
+
     private ComputeBuffer _BufferVtxId;
     private ComputeBuffer _BufferVertex;
     private ComputeBuffer _BufferBoxPrimUV;
